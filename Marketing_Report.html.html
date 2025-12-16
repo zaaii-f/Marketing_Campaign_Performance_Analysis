@@ -1,2233 +1,0 @@
-
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📊 تقرير تحليل الحملات التسويقية</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        :root {
-            --primary: #667eea;
-            --secondary: #764ba2;
-            --success: #4CAF50;
-            --danger: #f44336;
-            --warning: #FF9800;
-            --info: #2196F3;
-            --bg-light: #ffffff;
-            --bg-dark: #1a1a2e;
-            --text-light: #333;
-            --text-dark: #e0e0e0;
-        }
-        
-        body {
-            font-family: 'Tajawal', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            transition: all 0.3s ease;
-        }
-        
-        body.dark-mode {
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
-        }
-        
-        body.dark-mode .container {
-            background: var(--bg-dark);
-            color: var(--text-dark);
-        }
-        
-        body.dark-mode .section {
-            background: rgba(255, 255, 255, 0.05);
-        }
-        
-        body.dark-mode .metric-card {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-        }
-        
-        body.dark-mode table {
-            background: #0f3460;
-        }
-        
-        body.dark-mode td, body.dark-mode th {
-            color: var(--text-dark);
-            border-color: rgba(255,255,255,0.1);
-        }
-        
-        body.dark-mode .box {
-            background: rgba(255, 255, 255, 0.05);
-        }
-        
-        body.dark-mode .nav-menu {
-            background: #16213e;
-        }
-        
-        body.dark-mode .nav-menu a {
-            color: var(--text-dark);
-        }
-        
-        .container {
-            max-width: 1600px;
-            margin: 0 auto;
-            background: var(--bg-light);
-            border-radius: 30px;
-            padding: 50px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        
-        .header {
-            text-align: center;
-            padding: 60px 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 25px;
-            color: white;
-            margin-bottom: 50px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-        }
-        
-        .header h1 {
-            font-size: 3em;
-            margin-bottom: 20px;
-            font-weight: 900;
-        }
-        
-        .header p {
-            font-size: 1.3em;
-            opacity: 0.95;
-            margin: 10px 0;
-        }
-        
-        #progressBar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 0%;
-            height: 5px;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            z-index: 99999;
-            transition: width 0.1s ease;
-        }
-        
-        .control-buttons {
-            position: fixed;
-            top: 25px;
-            right: 25px;
-            z-index: 9999;
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-        
-        .btn {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            padding: 15px 25px;
-            border-radius: 30px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-            font-family: 'Tajawal';
-            transition: all 0.3s;
-        }
-        
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
-        }
-        
-        #searchBox {
-            padding: 15px 25px;
-            border-radius: 30px;
-            border: 2px solid #667eea;
-            font-family: 'Tajawal';
-            font-size: 15px;
-            width: 300px;
-            background: white;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-        }
-        
-        .nav-menu {
-            position: fixed;
-            top: 120px;
-            left: -350px;
-            background: white;
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.25);
-            z-index: 9999;
-            max-width: 280px;
-            max-height: 75vh;
-            overflow-y: auto;
-            transition: left 0.3s ease;
-        }
-        
-        .nav-menu.open {
-            left: 25px;
-        }
-        
-        .nav-menu h3 {
-            color: #667eea;
-            margin-bottom: 20px;
-            font-size: 1.3em;
-            font-weight: 700;
-        }
-        
-        .nav-menu ul {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .nav-menu li {
-            margin: 12px 0;
-        }
-        
-        .nav-menu a {
-            text-decoration: none;
-            color: var(--text-light);
-            display: block;
-            padding: 12px 15px;
-            border-radius: 10px;
-            transition: all 0.3s;
-            font-weight: 500;
-        }
-        
-        .nav-menu a:hover {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            transform: translateX(-8px);
-        }
-        
-        .section {
-            margin: 40px 0;
-            padding: 40px;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 25px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.6s ease;
-        }
-        
-        .section.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .section-title {
-            font-size: 2.5em;
-            margin-bottom: 35px;
-            color: #667eea;
-            border-bottom: 4px solid #667eea;
-            padding-bottom: 20px;
-            font-weight: 900;
-        }
-        
-        .subsection {
-            font-size: 1.8em;
-            color: #667eea;
-            margin: 35px 0 20px 0;
-            font-weight: 700;
-        }
-        
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin: 35px 0;
-        }
-        
-        .metric-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 35px;
-            border-radius: 20px;
-            color: white;
-            text-align: center;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
-            transition: transform 0.3s;
-        }
-        
-        .metric-card:hover {
-            transform: translateY(-12px);
-        }
-        
-        .metric-title {
-            font-size: 1.1em;
-            margin-bottom: 15px;
-            opacity: 0.95;
-            font-weight: 600;
-        }
-        
-        .metric-value {
-            font-size: 2.5em;
-            font-weight: 900;
-            margin: 10px 0;
-        }
-        
-        .metric-subtitle {
-            font-size: 1em;
-            opacity: 0.9;
-            margin-top: 10px;
-        }
-        
-        .box {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            padding: 30px;
-            border-radius: 18px;
-            margin: 25px 0;
-            line-height: 1.9;
-        }
-        
-        .box.success {
-            background: rgba(76, 175, 80, 0.12);
-            border-right: 5px solid #4CAF50;
-        }
-        
-        .box.warning {
-            background: rgba(255, 152, 0, 0.12);
-            border-right: 5px solid #FF9800;
-        }
-        
-        .box.danger {
-            background: rgba(244, 67, 54, 0.12);
-            border-right: 5px solid #f44336;
-        }
-        
-        .box.info {
-            border-right: 6px solid #667eea;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 25px 0;
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-        }
-        
-        th, td {
-            padding: 18px;
-            text-align: center;
-            border-bottom: 1px solid #eee;
-        }
-        
-        th {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            font-weight: 700;
-            font-size: 1.05em;
-        }
-        
-        tr:hover {
-            background: rgba(102, 126, 234, 0.05);
-        }
-        
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-            margin: 35px 0;
-        }
-        
-        .chart-container {
-            max-width: 900px;
-            margin: 50px auto;
-            padding: 30px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 12px 35px rgba(0,0,0,0.12);
-        }
-        
-        .footer {
-            text-align: center;
-            padding: 50px 30px;
-            margin-top: 80px;
-            border-top: 3px solid #eee;
-        }
-        
-        .footer p {
-            margin: 12px 0;
-            font-size: 1.1em;
-        }
-        
-        @media print {
-            .control-buttons, .nav-menu, .btn {
-                display: none !important;
-            }
-            body {
-                background: white;
-            }
-            .container {
-                box-shadow: none;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .container { padding: 25px; }
-            .header h1 { font-size: 2em; }
-            .section-title { font-size: 1.8em; }
-            .control-buttons {
-                flex-direction: column;
-                top: 10px;
-                right: 10px;
-            }
-            #searchBox {
-                width: 200px;
-            }
-            .grid-2 {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-</head>
-<body>
-
-    <div id="progressBar"></div>
-
-    <div class="control-buttons">
-        <button onclick="toggleNav()" class="btn">📑 القائمة</button>
-        <button onclick="toggleDarkMode()" class="btn" id="darkModeBtn">🌙 الوضع الليلي</button>
-        <button onclick="window.print()" class="btn">📥 طباعة / PDF</button>
-        <input type="text" id="searchBox" placeholder="🔍 ابحث في التقرير...">
-    </div>
-
-    <div class="nav-menu" id="navMenu">
-        <h3>📑 الأقسام</h3>
-        <ul>
-            <li><a href="#intro">المقدمة والهدف</a></li>
-            <li><a href="#section-1">1. الأداء الإجمالي</a></li>
-            <li><a href="#section-2">2. تحليل المدن</a></li>
-            <li><a href="#section-3">3. تحليل القنوات</a></li>
-            <li><a href="#section-4">4. تحليل الأرباع</a></li>
-            <li><a href="#section-5">5. التحليل التفصيلي</a></li>
-            <li><a href="#section-6">6. التحليل الديموغرافي</a></li>
-            <li><a href="#section-7">7. أفضل وأسوأ الحملات</a></li>
-            <li><a href="#section-8">8. نقاط الضعف</a></li>
-            <li><a href="#section-9">9. الفرص الملحوظة</a></li>
-            <li><a href="#section-10">10. توزيع الميزانية</a></li>
-            <li><a href="#section-11">11. النتائج الرئيسية</a></li>
-        </ul>
-    </div>
-
-    <div class="container">
-        <div class="header">
-            <h1>📊 تقرير تحليل أداء الحملات التسويقية</h1>
-            <p><strong>إعداد:</strong> زينب الحربي - محللة بيانات</p>
-            <p><strong>التاريخ:</strong> 3 نوفمبر 2025</p>
-            <p><strong>نطاق التحليل:</strong> 500 حملة تسويقية عبر 4 أرباع (Q1-Q4)</p>
-        </div>
-
-        <!-- المقدمة -->
-        <div class="section" id="intro">
-            <h2 class="section-title">🎯 المقدمة والهدف من التقرير</h2>
-            
-            <div class="box info">
-                <p style="font-size: 1.2em; line-height: 2; margin-bottom: 25px;">
-                    يهدف هذا التقرير إلى تقديم تحليل شامل ومفصّل لأداء الحملات التسويقية الرقمية المُنفذة خلال العام، من خلال فحص وتحليل <strong>500 حملة تسويقية</strong> عبر <strong>4 أرباع زمنية (Q1-Q4)</strong>، وعبر <strong>4 قنوات رقمية</strong> في <strong>5 مدن سعودية</strong> رئيسية.
-                </p>
-                
-                <h3 style="color: #667eea; font-size: 1.8em; margin: 25px 0 15px 0;">🎯 الأهداف الرئيسية:</h3>
-                <ul style="list-style: none; padding: 0;">
-                    <li style="margin: 15px 0; padding-right: 30px; position: relative;">
-                        <span style="position: absolute; right: 0; color: #667eea; font-weight: 900;">✓</span>
-                        📊 قياس الأداء الإجمالي: تحليل العائد على الاستثمار (ROI)، تكلفة الاكتساب (CPA)، ومعدلات التحويل
-                    </li>
-                    <li style="margin: 15px 0; padding-right: 30px; position: relative;">
-                        <span style="position: absolute; right: 0; color: #667eea; font-weight: 900;">✓</span>
-                        🌍 المقارنة الجغرافية: تحديد المدن الأكثر ربحية والأقل أداءً
-                    </li>
-                    <li style="margin: 15px 0; padding-right: 30px; position: relative;">
-                        <span style="position: absolute; right: 0; color: #667eea; font-weight: 900;">✓</span>
-                        📱 تقييم القنوات: مقارنة فعالية القنوات التسويقية (Snapchat, Instagram, TikTok, Twitter)
-                    </li>
-                    <li style="margin: 15px 0; padding-right: 30px; position: relative;">
-                        <span style="position: absolute; right: 0; color: #667eea; font-weight: 900;">✓</span>
-                        ⚠ كشف نقاط الضعف: تحديد المجالات التي تحتاج إلى تحسين
-                    </li>
-                    <li style="margin: 15px 0; padding-right: 30px; position: relative;">
-                        <span style="position: absolute; right: 0; color: #667eea; font-weight: 900;">✓</span>
-                        💡 اكتشاف الفرص: تحديد الأسواق والقطاعات غير المستغلة
-                    </li>
-                </ul>
-                
-                <div style="margin-top: 30px; padding: 25px; background: rgba(255, 193, 7, 0.15); border-radius: 15px; border-right: 5px solid #FFC107;">
-                    <strong>📌 ملاحظة مهمة:</strong>هذا التقرير يعرض البيانات والنتائج الفعلية دون تقديم توصيات .
-                </div>
-            </div>
-        </div>
-
-        <!-- 1. الأداء الإجمالي -->
-        <div class="section" id="section-1">
-            <h2 class="section-title">📈 1. الأداء الإجمالي للحملات</h2>
-            
-            <div class="metrics-grid">
-                 <div class="metric-card">
-                    <div class="metric-title">💎 الربح الصافي</div>
-                    <div class="metric-value">57,355,256</div>
-                    <div class="metric-subtitle">ريال سعودي</div>
-                </div>
-                
-                <div class="metric-card">
-                    <div class="metric-title">💸 إجمالي الإنفاق</div>
-                    <div class="metric-value">12,319,715</div>
-                    <div class="metric-subtitle">ريال سعودي</div>
-                </div>
-                
-                <div class="metric-card">
-                    <div class="metric-title">💰 إجمالي الإيرادات</div>
-                    <div class="metric-value">69,674,971</div>
-                    <div class="metric-subtitle">ريال سعودي</div>
-                </div>
-                
-                <div class="metric-card">
-                    <div class="metric-title">🎯 إجمالي التحويلات</div>
-                    <div class="metric-value">405,256</div>
-                    <div class="metric-subtitle">تحويل</div>
-                </div>
-                
-                <div class="metric-card">
-                    <div class="metric-title">📊 Overall ROI</div>
-                    <div class="metric-value">466%</div>
-                    <div class="metric-subtitle">العائد على الاستثمار</div>
-                </div>
-                
-                <div class="metric-card">
-                    <div class="metric-title">💵 Overall CPA</div>
-                    <div class="metric-value">30.40ريال </div>
-                    <div class="metric-subtitle">تكلفة الحصول على العميل </div>
-                </div>
-                
-                <div class="metric-card">
-                    <div class="metric-title">📈 Overall CTR</div>
-                    <div class="metric-value">3.99%</div>
-                    <div class="metric-subtitle"> مدى تفاعل الجمهور مع الإعلان</div>
-                </div>
-                
-                <div class="metric-card">
-                    <div class="metric-title">🎯 Overall CVR</div>
-                    <div class="metric-value">7.53%</div>
-                    <div class="metric-subtitle"> نسبة من أتمَوا الإجراء المطلوب بعد النقر</div>
-                </div>
-            </div>
-            
-            <div class="box success" style="text-align: center; font-size: 1.4em; padding: 40px;">
-                <strong>🏆 العائد الإجمالي على الاستثمار:</strong><br><br>
-                <span style="font-size: 1.8em; color: #4CAF50; font-weight: 900;">
-                    كل 1 ريال مُنفق حقق 5.65 ريال إيرادات و  4.66 ريال أرباح صافية 
-                </span>
-            </div>
-        </div>
-
-        <!-- 2. تحليل المدن -->
-        <div class="section" id="section-2">
-            <h2 class="section-title">🌍 2. تحليل الأداء حسب المدن</h2>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>الترتيب</th>
-                        <th>المدينة</th>
-                        <th>Avg ROI%</th>
-                        <th>CPA (ريال)</th>
-                        <th>الإيرادات</th>
-                        <th>الإنفاق</th>
-                        <th>عدد الحملات</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>🥇</td>
-                        <td><strong>Medina</strong></td>
-                        <td style="color: #4CAF50; font-weight: 900;">487.52%</td>
-                        <td>32.05</td>
-                        <td>16,503,615</td>
-                        <td>2,889,038</td>
-                        <td>114</td>
-                    </tr>
-                    <tr>
-                        <td>🥈</td>
-                        <td><strong>Riyadh</strong></td>
-                        <td style="color: #4CAF50; font-weight: 900;">480.66%</td>
-                        <td>28.65</td>
-                        <td>13,392,308</td>
-                        <td>2,306,405</td>
-                        <td>99</td>
-                    </tr>
-                    <tr>
-                        <td>🥉</td>
-                        <td><strong>Makkah</strong></td>
-                        <td style="color: #4CAF50; font-weight: 800;">476.32%</td>
-                        <td>27.94</td>
-                        <td>13,462,739</td>
-                        <td>2,165,238</td>
-                        <td>91</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td><strong>Jeddah</strong></td>
-                        <td style="color: #FF9800; font-weight: 700;">470.42%</td>
-                        <td>30.12</td>
-                        <td>15,405,993</td>
-                        <td>2,711,325</td>
-                        <td>110</td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td><strong>Dammam</strong></td>
-                        <td style="color: #f44336; font-weight: 700;">408.41%</td>
-                        <td>33.43</td>
-                        <td>11,834,316</td>
-                        <td>2,327,717</td>
-                        <td>86</td>
-                    </tr>
-                </tbody>
-            </table>
-          
-            <div class="subsection">🌟 أفضل 3 حملات في كل مدينة:</div>
-            
-            <div class="grid-2">
-                <div class="box">
-                    <h4 style="color: #667eea; font-size: 1.3em; margin-bottom: 15px;">📍 المدينة المنورة</h4>
-                    <p style="direction: rtl; text-align: right; margin: 12px 0; line-height: 2;">
-                        <strong>الحملة الأولى:</strong> حملة رمضان الكبرى<br>
-                        <strong>القناة:</strong> Instagram | <strong>التحويلات:</strong> 1,621<br>
-                        <strong style="color: #4CAF50; font-size: 1.1em;">العائد: 15,328.91%</strong>
-                    </p>
-                    <p style="direction: rtl; text-align: right; margin: 12px 0; line-height: 2;">
-                        <strong>الحملة الثانية:</strong>العودة للمدارس <br>
-                        <strong>القناة:</strong> Twitter | <strong>التحويلات:</strong> 378<br>
-                        <strong style="color: #4CAF50; font-size: 1.1em;">العائد: 9,104.50%</strong>
-                    </p>
-                    <p style="direction: rtl; text-align: right; margin: 12px 0; line-height: 2;">
-                        <strong>الحملة الثالثة:</strong> العودة للمدارس <br>
-                        <strong>القناة:</strong> Snapchat | <strong>التحويلات:</strong> 280<br>
-                        <strong style="color: #4CAF50; font-size: 1.1em;">العائد: 7,734.48%</strong>
-                    </p>
-                </div>
-                
-                <div class="box">
-                    <h4 style="color: #667eea; font-size: 1.3em; margin-bottom: 15px;">📍 الرياض</h4>
-                    <p style="direction: rtl; text-align: right; margin: 12px 0; line-height: 2;">
-                        <strong>الحملة الأولى:</strong> التوعية بالعلامة<br>
-                        <strong>القناة:</strong> Snapchat | <strong>التحويلات:</strong> 671<br>
-                        <strong style="color: #4CAF50; font-size: 1.1em;">العائد: 23,874.16%</strong>
-                    </p>
-                    <p style="direction: rtl; text-align: right; margin: 12px 0; line-height: 2;">
-                        <strong>الحملة الثانية:</strong> التوفير الذكي<br>
-                        <strong>القناة:</strong> Snapchat | <strong>التحويلات:</strong> 428<br>
-                        <strong style="color: #4CAF50; font-size: 1.1em;">العائد: 21,629.03%</strong>
-                    </p>
-                    <p style="direction: rtl; text-align: right; margin: 12px 0; line-height: 2;">
-                        <strong>الحملة الثالثة:</strong> العام الجديد<br>
-                        <strong>القناة:</strong> Instagram | <strong>التحويلات:</strong> 1,414<br>
-                        <strong style="color: #4CAF50; font-size: 1.1em;">العائد: 10,270.01%</strong>
-                    </p>
-                </div>
-                
-                <div class="box">
-                    <h4 style="color: #667eea; font-size: 1.3em; margin-bottom: 15px;">📍 مكة المكرمة</h4>
-                    <p style="direction: rtl; text-align: right; margin: 12px 0; line-height: 2;">
-                        <strong>الحملة الأولى:</strong> حملة الولاء<br>
-                        <strong>القناة:</strong> Snapchat | <strong>التحويلات:</strong> 431<br>
-                        <strong style="color: #4CAF50; font-size: 1.1em;">العائد: 7,956.36%</strong>
-                    </p>
-                    <p style="direction: rtl; text-align: right; margin: 12px 0; line-height: 2;">
-                        <strong>الحملة الثانية:</strong> تجربة المستخدم 2025<br>
-                        <strong>القناة:</strong> TikTok | <strong>التحويلات:</strong> 452<br>
-                        <strong style="color: #4CAF50; font-size: 1.1em;">العائد: 7,183.20%</strong>
-                    </p>
-                    <p style="direction: rtl; text-align: right; margin: 12px 0; line-height: 2;">
-                        <strong>الحملة الثالثة:</strong>  إنطلاقة الموسم <br>
-                        <strong>القناة:</strong> TikTok | <strong>التحويلات:</strong> 658<br>
-                        <strong style="color: #4CAF50; font-size: 1.1em;">العائد: 5,595.62%</strong>
-                    </p>
-                </div>
-                
-                <div class="box">
-                    <h4 style="color: #667eea; font-size: 1.3em; margin-bottom: 15px;">📍 جدة</h4>
-                    <p style="direction: rtl; text-align: right; margin: 12px 0; line-height: 2;">
-                        <strong>الحملة الأولى:</strong> حملة العيد<br>
-                        <strong>القناة:</strong> Snapchat | <strong>التحويلات:</strong> 356<br>
-                        <strong style="color: #4CAF50; font-size: 1.1em;">العائد: 51,274.95%</strong>
-                    </p>
-                    <p style="direction: rtl; text-align: right; margin: 12px 0; line-height: 2;">
-                        <strong>الحملة الثانية:</strong> اليوم الوطني<br>
-                        <strong>القناة:</strong> Instagram | <strong>التحويلات:</strong> 561<br>
-                        <strong style="color: #4CAF50; font-size: 1.1em;">العائد: 6,073.05%</strong>
-                    </p>
-                    <p style="direction: rtl; text-align: right; margin: 12px 0; line-height: 2;">
-                        <strong>الحملة الثالثة:</strong> التوعية بالعلامة <br>
-                        <strong>القناة:</strong> Instagram | <strong>التحويلات:</strong> 396<br>
-                        <strong style="color: #4CAF50; font-size: 1.1em;">العائد: 5,851.48%</strong>
-                    </p>
-                </div>
-            </div>
-            
-            <div class="box">
-                <h4 style="color: #667eea; font-size: 1.3em; margin-bottom: 15px;">📍 الدمام</h4>
-                <p style="direction: rtl; text-align: right; margin: 12px 0; line-height: 2;">
-                    <strong>الحملة الأولى:</strong> تجربة المستخدم 2025<br>
-                    <strong>القناة:</strong> TikTok | <strong>التحويلات:</strong> 565<br>
-                    <strong style="color: #4CAF50; font-size: 1.1em;">العائد: 21,559.64%</strong>
-                </p>
-                <p style="direction: rtl; text-align: right; margin: 12px 0; line-height: 2;">
-                    <strong>الحملة الثانية:</strong>  إنطلاقة الموسم <br>
-                    <strong>القناة:</strong> Instagram | <strong>التحويلات:</strong> 809<br>
-                    <strong style="color: #4CAF50; font-size: 1.1em;">العائد: 12,120.67%</strong>
-                </p>
-                <p style="direction: rtl; text-align: right; margin: 12px 0; line-height: 2;">
-                    <strong>الحملة الثالثة:</strong> تخفيضات نهاية السنه <br>
-                    <strong>القناة:</strong> Snapchat | <strong>التحويلات:</strong> 240<br>
-                    <strong style="color: #4CAF50; font-size: 1.1em;">العائد: 6,365.93%</strong>
-                </p>
-            </div>
-            
-            <div class="chart-container">
-                <canvas id="cityChart"></canvas>
-</div>
-        </div>
-
-        <!-- 3. تحليل القنوات -->
-        <div class="section" id="section-3">
-            <h2 class="section-title">📱 3. تحليل الأداء حسب القنوات</h2>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>الترتيب</th>
-                        <th>القناة</th>
-                        <th>Avg ROI%</th>
-                        <th>Avg CPA</th>
-                        <th>Avg CVR%</th>
-                        <th>عدد الحملات</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>🥇</td>
-                        <td><strong>📷 Instagram</strong></td>
-                        <td style="color: #4CAF50; font-weight: 900;">514.60%</td>
-                        <td>28.82</td>
-                        <td>7.52%</td>
-                        <td>122</td>
-                    </tr>
-                    <tr>
-                        <td>🥈</td>
-                        <td><strong>📸 Snapchat</strong></td>
-                        <td style="color: #4CAF50; font-weight: 900;">470.02%</td>
-                        <td>30.79</td>
-                        <td>7.45%</td>
-                        <td>122</td>
-                    </tr>
-                    <tr>
-                        <td>🥉</td>
-                        <td><strong>🐦 Twitter</strong></td>
-                        <td style="color: #FF9800; font-weight: 700;">462.24%</td>
-                        <td>31.30</td>
-                        <td>7.47%</td>
-                        <td>108</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td><strong>🎵 TikTok</strong></td>
-                        <td style="color: #f44336; font-weight: 700;">426.34%</td>
-                        <td>30.74</td>
-                        <td>7.63%</td>
-                        <td>148</td>
-                    </tr>
-                </tbody>
-            </table>
-            
-            <div class="box success">
-                <h4 style="color: #4CAF50; font-size: 1.4em; margin-bottom: 15px;">💡 الملاحظات الرئيسية:</h4>
-                <p><strong>✅ Instagram - الأفضل أداءً:</strong> أعلى ROI (514.60%) وأقل CPA (28.82 ريال) - أداء متوازن وممتاز</p>
-                <p><strong>✅ Snapchat - قوة في التحويل:</strong> ثاني أفضل ROI (470.02%) - أداء قوي جداً في الحملات الدينية والوطنية</p>
-                <p><strong>⚠ Twitter - أداء جيد لكن محدود:</strong> ROI جيد (462.24%) لكن عدد حملات أقل (108)</p>
-                <p><strong>❌ TikTok - يحتاج تحسين:</strong> أقل ROI (436.34%) رغم أكبر عدد حملات (148)</p>
-            </div>
-            
-            <div class="subsection">📱 أفضل 3 حملات في كل قناة:</div>
-            
-            <div class="grid-2">
-                <div class="box">
-                    <h4 style="color: #667eea; font-size: 1.3em; margin-bottom: 15px;">📷 Instagram</h4>
-                    <p style="direction: rtl; text-align: right; margin: 12px 0; line-height: 2;">
-                        <strong>الأولى:</strong> حملة رمضان الكبرى - المدينة<br>
-                        <strong>التحويلات:</strong> 1,621 | <strong style="color: #4CAF50;">العائد: 15,328.91%</strong>
-                    </p>
-                    <p style="direction: rtl; text-align: right; margin: 12px 0; line-height: 2;">
-                        <strong>الثانية:</strong> اليوم الوطني - الرياض<br>
-                        <strong>التحويلات:</strong> 562 | <strong style="color: #4CAF50;">العائد: 10,623.45%</strong>
-                    </p>
-                    <p style="direction: rtl; text-align: right; margin: 12px 0; line-height: 2;">
-                        <strong>الثالثة:</strong> العام الجديد - الرياض<br>
-                        <strong>التحويلات:</strong> 1,414 | <strong style="color: #4CAF50;">العائد: 10,270.01%</strong>
-                    </p>
-                </div>
-                
-                <div class="box">
-                    <h4 style="color: #667eea; font-size: 1.3em; margin-bottom: 15px;">📸 Snapchat</h4>
-                    <p style="direction: rtl; text-align: right; margin: 12px 0; line-height: 2;">
-                        <strong>الأولى:</strong> حملة العيد - جدة<br>
-                        <strong>التحويلات:</strong> 356 | <strong style="color: #4CAF50;">العائد: 51,274.95%</strong>
-                    </p>
-                    <p style="direction: rtl; text-align: right; margin: 12px 0; line-height: 2;">
-                        <strong>الثانية:</strong> التوعية بالعلامة - الرياض<br>
-                        <strong>التحويلات:</strong> 671 | <strong style="color: #4CAF50;">العائد: 23,874.16%</strong>
-                    </p>
-                    <p style="direction: rtl; text-align: right; margin: 12px 0; line-height: 2;">
-                        <strong>الثالثة:</strong> التوفير الذكي - الرياض<br>
-                        <strong>التحويلات:</strong> 428 | <strong style="color: #4CAF50;">العائد: 21,629.03%</strong>
-                    </p>
-                </div>
-                
-                <div class="box">
-                    <h4 style="color: #667eea; font-size: 1.3em; margin-bottom: 15px;">🐦 Twitter</h4>
-                    <p style="direction: rtl; text-align: right; margin: 12px 0; line-height: 2;">
-                        <strong>الأولى:</strong> العودة للمدارس - المدينة<br>
-                        <strong>التحويلات:</strong> 378 | <strong style="color: #4CAF50;">العائد: 9,104.50%</strong>
-                    </p>
-                    <p style="direction: rtl; text-align: right; margin: 12px 0; line-height: 2;">
-                        <strong>الثانية:</strong> تجربة المستخدم 2025 - الرياض<br>
-                        <strong>التحويلات:</strong> 752 | <strong style="color: #4CAF50;">العائد: 3,992.54%</strong>
-                    </p>
-                    <p style="direction: rtl; text-align: right; margin: 12px 0; line-height: 2;">
-                        <strong>الثالثة:</strong> عودة للعمل - المدينة<br>
-                        <strong>التحويلات:</strong> 308 | <strong style="color: #4CAF50;">العائد: 3,549.48%</strong>
-                    </p>
-                </div>
-                
-                <div class="box">
-                    <h4 style="color: #667eea; font-size: 1.3em; margin-bottom: 15px;">🎵 TikTok</h4>
-                    <p style="direction: rtl; text-align: right; margin: 12px 0; line-height: 2;">
-                        <strong>الأولى:</strong> تجربة المستخدم 2025 - الدمام<br>
-                        <strong>التحويلات:</strong> 565 | <strong style="color: #4CAF50;">العائد: 21,559.64%</strong>
-                    </p>
-                    <p style="direction: rtl; text-align: right; margin: 12px 0; line-height: 2;">
-                        <strong>الثانية:</strong> حملة الولاء - الرياض<br>
-                        <strong>التحويلات:</strong> 675 | <strong style="color: #4CAF50;">العائد: 8,199.36%</strong>
-                    </p>
-                    <p style="direction: rtl; text-align: right; margin: 12px 0; line-height: 2;">
-                        <strong>الثالثة:</strong> تجربة المستخدم 2025 - مكة<br>
-                        <strong>التحويلات:</strong> 452 | <strong style="color: #4CAF50;">العائد: 7,183.20%</strong>
-                    </p>
-                </div>
-            </div>
-            
-            <div class="chart-container">
-                <canvas id="channelChart"></canvas>
-            </div>
-        </div>
-
-        <!-- 4. تحليل الأرباع -->
-        <div class="section" id="section-4">
-            <h2 class="section-title">📅 4. تحليل الأداء بين الأرباع</h2>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>الربع</th>
-                        <th>الفترة</th>
-                        <th>الإنفاق</th>
-                        <th>الإيرادات</th>
-                        <th>Avg ROI%</th>
-                        <th>عدد الحملات</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Q1</strong></td>
-                        <td>يناير - مارس</td>
-                        <td>3,195,745</td>
-                        <td>17,248,104</td>
-                        <td style="color: #FF9800; font-weight: 700;">439.72%</td>
-                        <td>125</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Q2</strong></td>
-                        <td>أبريل - يونيو</td>
-                        <td>3,188,373</td>
-                        <td>16,523,941</td>
-                        <td style="color: #f44336; font-weight: 700;">418.26%</td>
-                        <td>125</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Q3</strong></td>
-                        <td>يوليو - سبتمبر</td>
-                        <td>2,894,057</td>
-                        <td>18,018,391</td>
-                        <td style="color: #4CAF50; font-weight: 900;">522.60%</td>
-                        <td>125</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Q4</strong></td>
-                        <td>أكتوبر - ديسمبر</td>
-                        <td>3,041,540</td>
-                        <td>17,884,534</td>
-                        <td style="color: #4CAF50; font-weight: 800;">488.01%</td>
-                        <td>125</td>
-                    </tr>
-                </tbody>
-            </table>
-            
-            <div class="chart-container">
-                <canvas id="quarterChart"></canvas>
-            </div>
-        </div>
-
-        <!-- 5. التحليل التفصيلي للأرباع -->
-        <div class="section" id="section-5">
-            <h2 class="section-title">📊 5. التحليل التفصيلي لكل ربع</h2>
-            
-            <div style="text-align: center; font-size: 2em; font-weight: 900; color: #667eea; margin: 40px 0;">
-                🌸 الربع الأول (Q1): يناير - مارس
-            </div>
-            
-            <div class="grid-2">
-                <div class="box">
-                    <h4 style="color: #667eea; margin-bottom: 15px;">📱 أفضل القنوات</h4>
-                    <p>🥇 تويتر: ROI <strong>566.65%</strong></p>
-                    <p>🥈 انستقرام: ROI <strong>442.63%</strong></p>
-                </div>
-                
-                <div class="box">
-                    <h4 style="color: #667eea; margin-bottom: 15px;">🏙 أفضل المدن</h4>
-                    <p>🥇 المدينة المنورة : ROI <strong>567.09%</strong></p>
-                    <p>🥈 الرياض : أداء قوي</p>
-                </div>
-                
-                <div class="box">
-                    <h4 style="color: #667eea; margin-bottom: 15px;">👥 الفئات العمرية</h4>
-                    <p><strong>الأنشطة :</strong> 25-34 سنة - أداء متوازن</p>
-                    <p><strong>القوة الشرائية:</strong> 45+ - تحويلات قوية</p>
-                </div>
-                
-                <div class="box">
-                    <h4 style="color: #667eea; margin-bottom: 15px;">✨ الأنماط الملحوظة</h4>
-                    <p>✅ تويتر كان فعّالاً</p>
-                    <p>✅ المدينة تصدرت الأداء</p>
-                </div>
-            </div>
-            
-            <div class="box success">
-                <strong>🏆 أفضل حملة في Q1:</strong><br>
-                التوفير الذكي  - الرياض | ROI: <strong>21,629.03%</strong> | الإيرادات: 146,454 ريال | الإنفاق: 674 ريال
-            </div>
-            
-            <div style="text-align: center; font-size: 2em; font-weight: 900; color: #667eea; margin: 60px 0 40px 0;">
-                🌙 الربع الثاني (Q2): أبريل - يونيو
-            </div>
-            
-            <div class="grid-2">
-                <div class="box">
-                    <h4 style="color: #667eea; margin-bottom: 15px;">📱 أفضل القنوات</h4>
-                    <p>🥇 إنستقرام: ROI <strong>565.46%</strong></p>
-                    <p>🥈 سناب شات: ROI <strong>466.44%</strong></p>
-                </div>
-                
-                <div class="box">
-                    <h4 style="color: #667eea; margin-bottom: 15px;">🏙 أفضل المدن</h4>
-                    <p>🥇 المدينة المنورة: ROI <strong>505.38%</strong></p>
-                    <p>🥈 جدة : أداء استثنائي</p>
-                </div>
-                
-                <div class="box">
-                    <h4 style="color: #667eea; margin-bottom: 15px;">👥 الفئات العمرية</h4>
-                    <p><strong>الأنشط:</strong> 18-24 سنة - نشاط مرتفع</p>
-                    <p><strong>القوة الشرائية:</strong> 25-34 سنة</p>
-                </div>
-                
-                <div class="box">
-                    <h4 style="color: #667eea; margin-bottom: 15px;">✨ الأنماط الملحوظة</h4>
-                    <p>✅ الحملات الدينية (رمضان/عيد) استثنائية</p>
-                    <p>✅ سناب شات تفوق واضح في رمضان</p>
-                    <p>✅ جدة حققت أعلى حملة (51,274%)</p>
-                </div>
-            </div>
-            
-            <div class="box success">
-                <strong>🏆 أفضل حملة في Q2:</strong><br>
-                حملة العيد - جدة | ROI: <strong>51,274.95%</strong> | الإيرادات: 314,415 ريال | الإنفاق: 612 ريال
-            </div>
-            
-            <div style="text-align: center; font-size: 2em; font-weight: 900; color: #667eea; margin: 60px 0 40px 0;">
-                🇸🇦 الربع الثالث (Q3): يوليو - سبتمبر
-            </div>
-            
-            <div class="grid-2">
-                <div class="box">
-                    <h4 style="color: #667eea; margin-bottom: 15px;">📱 أفضل القنوات</h4>
-                    <p>🥇 تويتر: ROI <strong>597.74%</strong></p>
-                    <p>🥈 سناب شات: ROI <strong>586.72%</strong></p>
-                </div>
-                
-                <div class="box">
-                    <h4 style="color: #667eea; margin-bottom: 15px;">🏙 أفضل المدن</h4>
-                    <p>🥇 مكة: ROI <strong>612.46%</strong></p>
-                    <p>🥈 الرياض: أداء قوي جداً</p>
-                </div>
-                
-                <div class="box">
-                    <h4 style="color: #667eea; margin-bottom: 15px;">👥 الفئات العمرية</h4>
-                    <p><strong>الأنشط:</strong> 45+ - قوة شرائية عالية</p>
-                    <p><strong>التفاعل:</strong> 25-34 سنة - نشط</p>
-                </div>
-                
-                <div class="box">
-                    <h4 style="color: #667eea; margin-bottom: 15px;">✨ الأنماط الملحوظة</h4>
-                    <p>✅ اليوم الوطني حقق أداءً استثنائياً</p>
-                    <p>✅ تويتر كان الأقوى في Q3</p>
-                    <p>✅ أعلى إيرادات (18 مليون ريال سعودي)</p>
-                </div>
-            </div>
-            
-            <div class="box success">
-                <strong>🏆 أفضل حملة في Q3:</strong><br>
-                التوعية بالعلامة - الرياض | ROI: <strong>23,874.16%</strong> | الإيرادات: 432,973 ريال | الإنفاق: 1,806 ريال
-            </div>
-            
-            <div style="text-align: center; font-size: 2em; font-weight: 900; color: #667eea; margin: 60px 0 40px 0;">
-                🛍 الربع الرابع (Q4): أكتوبر - ديسمبر
-            </div>
-            
-            <div class="grid-2">
-                <div class="box">
-                    <h4 style="color: #667eea; margin-bottom: 15px;">📱 أفضل القنوات</h4>
-                    <p>🥇 إنستقرام: ROI <strong>583.39%</strong></p>
-                    <p>🥈 سناب شات: ROI <strong>496.36%</strong></p>
-                </div>
-                
-                <div class="box">
-                    <h4 style="color: #667eea; margin-bottom: 15px;">🏙 أفضل المدن</h4>
-                    <p>🥇 مكة: ROI <strong>704.95%</strong></p>
-                    <p>🥈 الدمام: قفزة في الأداء</p>
-                </div>
-                
-                <div class="box">
-                    <h4 style="color: #667eea; margin-bottom: 15px;">👥 الفئات العمرية</h4>
-                    <p><strong>الأنشط:</strong> 18-24 سنة - الأنشط في التخفيضات</p>
-                    <p><strong>القوة الشرائية:</strong> 45+</p>
-                </div>
-                
-                <div class="box">
-                    <h4 style="color: #667eea; margin-bottom: 15px;">✨ الأنماط الملحوظة</h4>
-                    <p>✅ حملات التخفيضات والعروض نجحت</p>
-                    <p>✅ TikTok تحسن في Q4</p>
-                    <p>✅ مكة تصدرت بأعلى ROI</p>
-                </div>
-            </div>
-            
-            <div class="box success">
-                <strong>🏆 أفضل حملة في Q4:</strong><br>
-                تجربة المستخدم 2025 - الدمام | ROI: <strong>21,559.64%</strong> | الإيرادات: 255,584 ريال | الإنفاق: 1,180 ريال
-            </div>
-        </div>
- 
-        <!-- 6. التحليل الديموغرافي -->
-        <div class="section" id="section-6">
-                <h2 class="section-title">👥 6. التحليل الديموغرافي</h2>
-            
-                <div class="subsection">أ) تحليل الفئة العمرية:</div>
-                <table>
-                   <thead>
-                        <tr>
-                           <th>الفئة العمرية</th>
-                           <th>عدد الحملات</th>
-                           <th>Avg CVR%</th>
-                           <th>Avg ROI%</th>
-                           <th>Avg CPA</th>
-                       </tr>
-                   </thead>
-                  <tbody>
-                    <tr>
-                        <td><strong>45+</strong></td>
-                        <td>113</td>
-                        <td>7.68%</td>
-                        <td style="color: #4CAF50; font-weight: 900;">517.54%</td>
-                        <td style="color: #4CAF50; font-weight: 900;">26.69</td>
-                    </tr>
-                    <tr>
-                        <td><strong>25-34</strong></td>
-                        <td>125</td>
-                        <td>7.25%</td>
-                        <td style="color: #4CAF50; font-weight: 800;">480.34%</td>
-                        <td>33.36</td>
-                    </tr>
-                    <tr>
-                        <td><strong>35-44</strong></td>
-                        <td>133</td>
-                        <td>7.57%</td>
-                        <td style="color: #FF9800; font-weight: 700;">447.85%</td>
-                        <td>31.73</td>
-                    </tr>
-                    <tr>
-                        <td><strong>18-24</strong></td>
-                        <td>129</td>
-                        <td>7.50%</td>
-                        <td style="color: #FF9800; font-weight: 700;">425.91%</td>
-                        <td style="color: #f44336; font-weight: 700;">38.03</td>
-                    </tr>
-                </tbody>
-            </table>
-            
-            <div class="box success">
-                <strong>💡 الملاحظات:</strong><br>
-                ✅ <strong>الفئة 45+ هي الأقوى:</strong> أعلى ROI (517.54%) وأقل CPA (26.69 ريال)<br>
-                ✅ <strong>الفئة 25-34:</strong> أداء متوازن وقوي (ROI: 480.34%)<br>
-                ⚠ <strong>الفئة 18-24:</strong> أعلى CPA (38.03 ريال) - تحتاج تحسين
-            </div>
-            
-            <div class="subsection">ب) تحليل النوع الاجتماعي:</div>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>النوع</th>
-                        <th>عدد الحملات</th>
-                        <th>Avg CVR%</th>
-                        <th>Avg ROI%</th>
-                        <th>Avg CPA</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>👨‍💼 Male</strong></td>
-                        <td>261</td>
-                        <td>7.48%</td>
-                        <td style="color: #4CAF50; font-weight: 900;">491.26%</td>
-                        <td style="color: #4CAF50; font-weight: 900;">28.91</td>
-                    </tr>
-                    <tr>
-                        <td><strong>👩‍💼 Female</strong></td>
-                        <td>239</td>
-                        <td style="color: #4CAF50; font-weight: 900;">7.58%</td>
-                        <td style="color: #4CAF50; font-weight: 800;">440.89%</td>
-                        <td>31.98</td>
-                    </tr>
-                </tbody>
-            </table>
-            
-            <div class="box success">
-                <strong>💡 الملاحظات:</strong><br>
-                ✅ <strong>الذكور:</strong> أعلى ROI (491.26%) وأقل CPA (28.91 ريال)<br>
-                ✅ <strong>الإناث:</strong> أعلى CVR (7.58%) - أفضل في التحويل<br>
-                ✅ الفارق بسيط - كلاهما مهم
-            </div>
-
-        <!-- 7. أفضل وأسوأ الحملات -->
-        <div class="section" id="section-7">
-            <h2 class="section-title">🏆 7. أفضل وأسوأ 5 حملات</h2>
-            
-            <div class="subsection" style="color: #4CAF50;">🥇 أفضل 5 حملات (أعلى ROI):</div>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>اسم الحملة</th>
-                        <th>ROI%</th>
-                        <th>الإيرادات</th>
-                        <th>الإنفاق</th>
-                        <th>القناة</th>
-                        <th>المدينة</th>
-                        <th>الربع</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>1</strong></td>
-                        <td><strong>حملة العيد</strong></td>
-                        <td style="color: #4CAF50; font-weight: 900; font-size: 1.2em;">51,274.95%</td>
-                        <td>314,415</td>
-                        <td>612</td>
-                        <td>Snapchat</td>
-                        <td>Jeddah</td>
-                        <td>Q2</td>
-                    </tr>
-                    <tr>
-                        <td><strong>2</strong></td>
-                        <td><strong>التوعية بالعلامة</strong></td>
-                        <td style="color: #4CAF50; font-weight: 900; font-size: 1.1em;">23,874.16%</td>
-                        <td>432,973</td>
-                        <td>1,806</td>
-                        <td>Snapchat</td>
-                        <td>Riyadh</td>
-                        <td>Q3</td>
-                    </tr>
-                    <tr>
-                        <td><strong>3</strong></td>
-                        <td><strong>التوفير الذكي </strong></td>
-                        <td style="color: #4CAF50; font-weight: 900;">21,629.03%</td>
-                        <td>146,454</td>
-                        <td>674</td>
-                        <td>Snapchat</td>
-                        <td>Riyadh</td>
-                        <td>Q1</td>
-                    </tr>
-                    <tr>
-                        <td><strong>4</strong></td>
-                        <td><strong>تجربة المستخدم 2025</strong></td>
-                        <td style="color: #4CAF50; font-weight: 900;">21,559.64%</td>
-                        <td>255,584</td>
-                        <td>1,180</td>
-                        <td>TikTok</td>
-                        <td>Dammam</td>
-                        <td>Q4</td>
-                    </tr>
-                    <tr>
-                    <td><strong>5</strong></td>
-                        <td><strong>حملة رمضان الكبرى</strong></td>
-                        <td style="color: #4CAF50; font-weight: 900;">15,328.91%</td>
-                        <td>137,092</td>
-                        <td>889</td>
-                        <td>Instagram</td>
-                        <td>Medina</td>
-                        <td>Q2</td>
-                    </tr>
-                </tbody>
-            </table>
-            
-            <div class="subsection" style="color: #f44336; margin-top: 50px;">❌ أسوأ 5 حملات (أقل ROI - خسائر):</div>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>اسم الحملة</th>
-                        <th>ROI%</th>
-                        <th>الإيرادات</th>
-                        <th>الإنفاق</th>
-                        <th>القناة</th>
-                        <th>المدينة</th>
-                        <th>الربع</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>1</strong></td>
-                        <td><strong>حملة القهوة السعودية</strong></td>
-                        <td style="color: #f44336; font-weight: 900; font-size: 1.2em;">-95.13%</td>
-                        <td>1,654</td>
-                        <td>33,958</td>
-                        <td>TikTok</td>
-                        <td>Makkah</td>
-                        <td>Q2</td>
-                    </tr>
-                    <tr>
-                        <td><strong>2</strong></td>
-                        <td><strong>عروض الصيف الذكية</strong></td>
-                        <td style="color: #f44336; font-weight: 900;">-93.17%</td>
-                        <td>2,756</td>
-                        <td>40,374</td>
-                        <td>Snapchat</td>
-                        <td>Dammam</td>
-                        <td>Q2</td>
-                    </tr>
-                    <tr>
-                        <td><strong>3</strong></td>
-                        <td><strong>عودة للعمل</strong></td>
-                        <td style="color: #f44336; font-weight: 900;">-93.00%</td>
-                        <td>2,697</td>
-                        <td>38,555</td>
-                        <td>TikTok</td>
-                        <td>Riyadh</td>
-                        <td>Q1</td>
-                    </tr>
-                    <tr>
-                        <td><strong>4</strong></td>
-                        <td><strong>الموسم الثالث  </strong></td>
-                        <td style="color: #f44336; font-weight: 900;">-89.31%</td>
-                        <td>5,044</td>
-                        <td>47,194</td>
-                        <td>Instagram</td>
-                        <td>Riyadh</td>
-                        <td>Q3</td>
-                    </tr>
-                    <tr>
-                        <td><strong>5</strong></td>
-                        <td><strong>الموسم الثالث  </strong></td>
-                        <td style="color: #f44336; font-weight: 900;">-87.19%</td>
-                        <td>4,548</td>
-                        <td>35,458</td>
-                        <td>TikTok</td>
-                        <td>Jeddah</td>
-                        <td>Q3</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- 8. نقاط الضعف -->
-        <div class="section" id="section-8">
-            <h2 class="section-title">⚠ 8. نقاط الضعف الملحوظة</h2>
-            
-            <div class="subsection">أ) الفجوات الجغرافية:</div>
-            
-            <div class="box danger">
-                <h4 style="color: #f44336; font-size: 1.3em; margin-bottom: 15px;">❌ الدمام - أسوأ أداء</h4>
-                <p>• أقل Avg ROI: <strong>408.41%</strong></p>
-                <p>• أعلى CPA: <strong>33.43 ريال</strong></p>
-                <p>• أقل عدد حملات: <strong>86 حملة</strong> فقط</p>
-            </div>
-            
-          <div class="box warning">
-    <h4 style="color: #FF9800; font-size: 1.3em; margin-bottom: 15px;">💸 مكة المكرمة - أقل استثمار</h4>
-    <p style="direction: rtl; text-align: right; line-height: 2; font-size: 1.05em;">
-        تُعد مكة المكرمة المدينة ذات أقل استثمار تسويقي خلال فترة التحليل، بإجمالي إنفاق بلغ 
-        <strong style="color: #FF9800;">2,165,238 ريال</strong>، وهو الأدنى مقارنة ببقية المدن.
-    </p>
-    <p style="direction: rtl; text-align: right; line-height: 2; font-size: 1.05em; margin-top: 12px;">
-        تُقدّر فجوة الاستثمار بينها وبين المدينة المنورة — صاحبة أعلى إنفاق — بنحو 
-        <strong style="color: #f44336;">723,800 ريال</strong>.
-    </p>
-</div>
-            
-           <div class="box warning">
-    <h4 style="color: #FF9800; font-size: 1.3em; margin-bottom: 15px;">📊 فجوة الأداء بين المدن</h4>
-    <p style="direction: rtl; text-align: right; line-height: 2; font-size: 1.05em;">
-        يظهر تفاوت في متوسط العائد على الاستثمار بين المدينة المنورة (<strong style="color: #4CAF50;">487.52%</strong>) 
-        والدمام (<strong style="color: #f44336;">408.41%</strong>) بفارق <strong style="color: #FF9800;">79.11 نقطة ROI</strong>، 
-        مما يشير إلى فجوة أداء جغرافية واضحة في كفاءة الحملات بين المنطقتين.
-    </p>
-</div>
-            
-            <div class="subsection">ب) الفجوات في القنوات:</div>
-            
-            <div class="box danger">
-    <h4 style="color: #f44336; font-size: 1.3em; margin-bottom: 15px;">❌ TikTok - الأداء الأضعف</h4>
-    
-    <ul style="list-style: none; padding: 0; direction: rtl; text-align: right;">
-        <li style="margin: 12px 0; line-height: 2;">
-            • متوسط العائد على الاستثمار (ROI): <strong style="color: #f44336;">436.34%</strong> (الأدنى بين القنوات)
-        </li>
-        
-        <li style="margin: 12px 0; line-height: 2;">
-            • عدد الحملات: <strong style="color: #f44336;">148 حملة</strong> (الأعلى عددًا – تمثل <strong>29.6%</strong> من إجمالي الحملات)
-        </li>
-        
-        <li style="margin: 12px 0; line-height: 2;">
-            • معدل التحويل (CVR): <strong>7.03%</strong> (الأقل)
-        </li>
-        
-        <li style="margin: 12px 0; line-height: 2;">
-            • متوسط تكلفة الاكتساب (CPA): <strong>30.74 ريال</strong>
-        </li>
-    </ul>
-    
-    <div style="margin-top: 20px; padding: 20px; background: rgba(244, 67, 54, 0.1); border-radius: 12px; border-right: 5px solid #f44336;">
-        <p style="direction: rtl; text-align: right; line-height: 2.2; font-size: 1.05em; margin: 0;">
-            <strong style="color: #f44336; font-size: 1.1em;">💡 الملاحظة:</strong><br><br>
-            رغم كثرة الحملات، إلا أن العائد المالي (ROI) كان الأدنى، مما يشير إلى كفاءة مالية ضعيفة في الإنفاق الإعلاني مقارنة ببقية القنوات.
-        </p>
-    </div>
-
-            
-           <div class="box warning">
-    <h4 style="color: #FF9800; font-size: 1.3em; margin-bottom: 15px;">⚠ Twitter - عائد جيد مقابل حجم محدود من الحملات</h4>
-    
-    <p style="direction: rtl; text-align: right; line-height: 2.2; font-size: 1.05em; margin: 15px 0;">
-        رغم أن عدد الحملات أقل من باقي القنوات (<strong style="color: #FF9800;">108 حملة</strong> - <strong>21.6%</strong> من الإجمالي)، 
-        إلا أن النتائج المالية تشير إلى استقرار في الأداء وتحقيق عائد جيد نسبيًا 
-        (<strong style="color: #4CAF50;">ROI: 462.24%</strong>).
-    </p>
-</div>
-            
-            <div class="subsection">ج) الفجوات الزمنية:</div>
-            
-            <div class="box danger">
-                <h4 style="color: #f44336; font-size: 1.3em; margin-bottom: 15px;">❌ Q2 - الأضعف</h4>
-                <p>• (ROT) أقل عائد على الاستثمار: <strong>418.26%</strong></p>
-                <p>• رغم إنفاق مرتفع: <strong>3,188,373 ريال</strong></p>
-                <p>• يحتاج دراسة أسباب الضعف</p>
-            </div>
-            
-           <div class="box warning">
-    <h4 style="color: #FF9800; font-size: 1.3em; margin-bottom: 15px;">📊 تباين واضح بين الأرباع</h4>
-    
-    <p style="direction: rtl; text-align: right; line-height: 2.2; font-size: 1.05em; margin: 15px 0;">
-        يُلاحظ تباين واضح بين الأرباع، حيث يتفوق الربع الثالث (Q3) بعائد <strong style="color: #4CAF50;">522.60%</strong>، 
-        أي بفارق <strong style="color: #FF9800;">104.34 نقطة ROI</strong> عن Q2 
-        (<strong style="color: #f44336;">418.26%</strong>).
-    </p>
-</div>
-            
-            <div class="subsection">د) فرص غير مُستغلة:</div>
-            
-            <div class="box success">
-                <h4 style="color: #4CAF50; font-size: 1.3em; margin-bottom: 15px;">💡 Instagram</h4>
-                <p>• أعلى ROI (<strong>514.60%</strong>)</p>
-                <p>• لكن يمثل <strong>24.4%</strong> فقط من الحملات</p>
-                <p>• <strong>الفرصة:</strong> يستحق استثماراً أكبر</p>
-            </div>
-            
-            <div class="box success">
-                <h4 style="color: #4CAF50; font-size: 1.3em; margin-bottom: 15px;">💡 الفئة 45+</h4>
-                <p>• أعلى ROI (<strong>517.54%</strong>)</p>
-                <p>• أقل CPA (<strong>26.69 ريال</strong>)</p>
-                <p>• لكن <strong>22.6%</strong> فقط من الحملات تستهدفهم</p>
-                <p>• <strong>الفرصة:</strong> سوق غير مستغل بالكامل</p>
-            </div>
-        </div>
-
-        <!-- 9. الفرص الملحوظة -->
-        <div class="section" id="section-9">
-            <h2 class="section-title">💡 9. الفرص الملحوظة (غير المستغلة)</h2>
-            
-            <div class="subsection">أ) الفرص الجغرافية (غير المستغلة):</div>
-
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; margin: 40px 0;">
-    
-    <!-- الفرصة 1: المدينة المنورة -->
-    <div style="background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(139, 195, 74, 0.15) 100%); padding: 35px; border-radius: 20px; border: 3px solid #4CAF50; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
-        <div style="position: absolute; top: -20px; right: 20px; background: linear-gradient(135deg, #4CAF50, #8BC34A); color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8em; font-weight: 900; box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);">1</div>
-        
-        <h4 style="color: #4CAF50; font-size: 1.4em; margin: 20px 0 20px 0; font-weight: 800; direction: rtl; text-align: right;">
-            📍 المدينة المنورة – فرصة توسّع استثماري
-        </h4>
-        
-        <ul style="list-style: none; padding: 0; direction: rtl; text-align: right;">
-            <li style="margin: 12px 0; line-height: 2;">
-                • <strong>ROI:</strong> <strong style="color: #4CAF50; font-size: 1.1em;">487.52%</strong> (الأعلى بين المدن)
-            </li>
-            <li style="margin: 12px 0; line-height: 2;">
-                • <strong>الإيرادات:</strong> <strong style="color: #4CAF50;">16.5 مليون ريال</strong> (الأعلى إجمالاً)
-            </li>
-            <li style="margin: 12px 0; line-height: 2;">
-                • <strong>المؤشر:</strong> مركز أداء قوي ومستقر
-            </li>
-        </ul>
-        
-        <div style="margin-top: 20px; padding: 15px; background: rgba(76, 175, 80, 0.2); border-radius: 12px; border-right: 4px solid #4CAF50;">
-            <p style="direction: rtl; text-align: right; line-height: 2; margin: 0; font-weight: 600;">
-                <strong style="color: #4CAF50;">💡 الفرصة:</strong><br>
-                تستحق زيادة الاستثمار والتوسع في الحملات المستقبلية لتعظيم العائد
-            </p>
-        </div>
-    </div>
-    
-    <!-- الفرصة 2: الرياض -->
-    <div style="background: linear-gradient(135deg, rgba(33, 150, 243, 0.15) 0%, rgba(3, 169, 244, 0.15) 100%); padding: 35px; border-radius: 20px; border: 3px solid #2196F3; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
-        <div style="position: absolute; top: -20px; right: 20px; background: linear-gradient(135deg, #2196F3, #03A9F4); color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8em; font-weight: 900; box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);">2</div>
-        
-        <h4 style="color: #2196F3; font-size: 1.4em; margin: 20px 0 20px 0; font-weight: 800; direction: rtl; text-align: right;">
-            📍 الرياض – فرصة تعزيز كفاءة الاستثمار
-        </h4>
-        
-        <ul style="list-style: none; padding: 0; direction: rtl; text-align: right;">
-            <li style="margin: 12px 0; line-height: 2;">
-                • <strong>ROI:</strong> <strong style="color: #2196F3; font-size: 1.1em;">480.66%</strong> (ثاني أعلى مدينة أداءً)
-            </li>
-            <li style="margin: 12px 0; line-height: 2;">
-                • <strong>CPA:</strong> <strong style="color: #2196F3;">28.65 ريال</strong> (الأدنى بين المدن)
-            </li>
-            <li style="margin: 12px 0; line-height: 2;">
-                • <strong>المؤشر:</strong> كفاءة تشغيلية مرتفعة مقابل تكلفة منخفضة
-            </li>
-        </ul>
-        
-        <div style="margin-top: 20px; padding: 15px; background: rgba(33, 150, 243, 0.2); border-radius: 12px; border-right: 4px solid #2196F3;">
-            <p style="direction: rtl; text-align: right; line-height: 2; margin: 0; font-weight: 600;">
-                <strong style="color: #2196F3;">💡 الفرصة:</strong><br>
-                تعزيز الحملات القائمة وزيادة التغطية الرقمية ضمن نفس كفاءة الإنفاق
-            </p>
-        </div>
-    </div>
-    
-    <!-- الفرصة 3: جدة -->
-    <div style="background: linear-gradient(135deg, rgba(156, 39, 176, 0.15) 0%, rgba(233, 30, 99, 0.15) 100%); padding: 35px; border-radius: 20px; border: 3px solid #9C27B0; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
-        <div style="position: absolute; top: -20px; right: 20px; background: linear-gradient(135deg, #9C27B0, #E91E63); color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8em; font-weight: 900; box-shadow: 0 5px 15px rgba(156, 39, 176, 0.4);">3</div>
-        
-        <h4 style="color: #9C27B0; font-size: 1.4em; margin: 20px 0 20px 0; font-weight: 800; direction: rtl; text-align: right;">
-            📍 جدة – فرصة تكرار النماذج الناجحة
-        </h4>
-        
-        <ul style="list-style: none; padding: 0; direction: rtl; text-align: right;">
-            <li style="margin: 12px 0; line-height: 2;">
-                • <strong>ROI لأعلى حملة:</strong> <strong style="color: #9C27B0; font-size: 1.2em;">51,274%</strong> (الأعلى في المملكة)
-            </li>
-            <li style="margin: 12px 0; line-height: 2;">
-                • <strong>متوسط ROI للمدينة:</strong> <strong style="color: #9C27B0;">470.42%</strong>
-            </li>
-            <li style="margin: 12px 0; line-height: 2;">
-                • <strong>المؤشر:</strong> حملات شديدة النجاح ضمن Snapchat و Instagram
-            </li>
-        </ul>
-        
-        <div style="margin-top: 20px; padding: 15px; background: rgba(156, 39, 176, 0.2); border-radius: 12px; border-right: 4px solid #9C27B0;">
-            <p style="direction: rtl; text-align: right; line-height: 2; margin: 0; font-weight: 600;">
-                <strong style="color: #9C27B0;">💡 الفرصة:</strong><br>
-                التركيز على تكرار النماذج الناجحة وتوسيعها في المواسم القادمة
-            </p>
-        </div>
-    </div>
-    
-</div>
-           
-            <div class="subsection">ج) الفرص القناتية (غير المستغلة):</div>
-
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 35px; margin: 40px 0;">
-    
-    <!-- الفرصة 1: Instagram -->
-    <div style="background: linear-gradient(135deg, rgba(225, 48, 108, 0.12) 0%, rgba(193, 53, 132, 0.12) 100%); padding: 40px; border-radius: 20px; border: 3px solid #E1306C; position: relative; box-shadow: 0 12px 35px rgba(0,0,0,0.15);">
-        <div style="position: absolute; top: -25px; right: 25px; background: linear-gradient(135deg, #E1306C, #C13584); color: white; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2em; font-weight: 900; box-shadow: 0 6px 20px rgba(225, 48, 108, 0.5);">1</div>
-        
-        <h4 style="color: #E1306C; font-size: 1.5em; margin: 25px 0 20px 0; font-weight: 800; direction: rtl; text-align: right;">
-            📷 Instagram – فرصة توسّع قناتي
-        </h4>
-        
-        <ul style="list-style: none; padding: 0; direction: rtl; text-align: right;">
-            <li style="margin: 15px 0; line-height: 2.2; font-size: 1.05em;">
-                • <strong>ROI:</strong> <strong style="color: #E1306C; font-size: 1.2em;">514.60%</strong> (الأعلى بين القنوات)
-            </li>
-            <li style="margin: 15px 0; line-height: 2.2; font-size: 1.05em;">
-                • <strong>CPA:</strong> <strong style="color: #E1306C;">28.82 ريال</strong> (الأدنى بين القنوات)
-            </li>
-            <li style="margin: 15px 0; line-height: 2.2; font-size: 1.05em;">
-                • <strong>نسبة الحملات:</strong> تمثل فقط <strong style="color: #E1306C;">24.4%</strong> من إجمالي الحملات
-            </li>
-            <li style="margin: 15px 0; line-height: 2.2; font-size: 1.05em;">
-                • <strong>المؤشر:</strong> قناة عالية الكفاءة والإيراد لكنها لم تأخذ نصيبها من الاستثمار
-            </li>
-        </ul>
-        
-        <div style="margin-top: 25px; padding: 20px; background: rgba(225, 48, 108, 0.15); border-radius: 15px; border-right: 5px solid #E1306C;">
-            <p style="direction: rtl; text-align: right; line-height: 2.2; margin: 0; font-weight: 600; font-size: 1.05em;">
-                <strong style="color: #E1306C; font-size: 1.15em;">💡 الفرصة:</strong><br>
-                زيادة حصة Instagram من الميزانية والتوسع في عدد الحملات المستقبلية لتعظيم العائد
-            </p>
-        </div>
-    </div>
-    
-    <!-- الفرصة 2: Snapchat + رمضان -->
-    <div style="background: linear-gradient(135deg, rgba(255, 252, 0, 0.12) 0%, rgba(255, 193, 7, 0.12) 100%); padding: 40px; border-radius: 20px; border: 3px solid #FFFC00; position: relative; box-shadow: 0 12px 35px rgba(0,0,0,0.15);">
-        <div style="position: absolute; top: -25px; right: 25px; background: linear-gradient(135deg, #FFFC00, #FFC107); color: #000; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2em; font-weight: 900; box-shadow: 0 6px 20px rgba(255, 252, 0, 0.5);">2</div>
-        
-        <h4 style="color: #F59E0B; font-size: 1.5em; margin: 25px 0 20px 0; font-weight: 800; direction: rtl; text-align: right;">
-            📸 Snapchat + رمضان – فرصة موسمية عالية العائد
-        </h4>
-        
-        <ul style="list-style: none; padding: 0; direction: rtl; text-align: right;">
-            <li style="margin: 15px 0; line-height: 2.2; font-size: 1.05em;">
-                • <strong>ROI:</strong> <strong style="color: #F59E0B; font-size: 1.3em;">51,274%</strong> (أعلى حملة على الإطلاق)
-            </li>
-            <li style="margin: 15px 0; line-height: 2.2; font-size: 1.05em;">
-                • <strong>السياق:</strong> الحملة تمت خلال موسم رمضان، وحققت عائدًا استثنائيًا
-            </li>
-            <li style="margin: 15px 0; line-height: 2.2; font-size: 1.05em;">
-                • <strong>المؤشر:</strong> Snapchat يحقق أداءً قويًا في المواسم الدينية والمناسبات الخاصة
-            </li>
-        </ul>
-        
-        <div style="margin-top: 25px; padding: 20px; background: rgba(245, 158, 11, 0.15); border-radius: 15px; border-right: 5px solid #F59E0B;">
-            <p style="direction: rtl; text-align: right; line-height: 2.2; margin: 0; font-weight: 600; font-size: 1.05em;">
-                <strong style="color: #F59E0B; font-size: 1.15em;">💡 الفرصة:</strong><br>
-                التركيز على تعزيز الحملات الموسمية على Snapchat واستنساخ نماذج النجاح المشابهة في مواسم قادمة
-            </p>
-        </div>
-    </div>
-    
-</div>
-            <div class="subsection">د) الفرص الموسمية:</div>
-            
-<div class="grid-2">
-    <!-- Box 1 -->
-    <div style="background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(129, 199, 132, 0.1)); padding: 20px; border-radius: 12px; border-left: 5px solid #4CAF50; position: relative;">
-        <div style="position: absolute; top: -12px; right: 15px; background: #4CAF50; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px;">1</div>
-        <h4 style="color: #2E7D32; margin-bottom: 12px; margin-top: 8px;">🇸🇦 الحملات الوطنية</h4>
-        <p style="margin: 6px 0;">• أداء استثنائي في Q3 (522.60%)</p>
-        <p style="margin: 6px 0;">• <strong>الفرصة:</strong> زيادة الاستثمار في المناسبات الوطنية</p>
-    </div>
-    
-    <!-- Box 2 -->
-    <div style="background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 214, 102, 0.1)); padding: 20px; border-radius: 12px; border-left: 5px solid #FFC107; position: relative;">
-        <div style="position: absolute; top: -12px; right: 15px; background: #FFC107; color: #000; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px;">2</div>
-        <h4 style="color: #F57F17; margin-bottom: 12px; margin-top: 8px;">🌙 رمضان والعيد</h4>
-        <p style="margin: 6px 0;">• أداء قوي جداً في Q2 - أعلى حملة: 51,274%</p>
-        <p style="margin: 6px 0;">• <strong>الفرصة:</strong> تخصيص ميزانية أكبر للحملات الدينية</p>
-    </div>
-    
-    <!-- Box 3 -->
-    <div style="background: linear-gradient(135deg, rgba(156, 39, 176, 0.1), rgba(186, 104, 200, 0.1)); padding: 20px; border-radius: 12px; border-left: 5px solid #9C27B0; position: relative;">
-        <div style="position: absolute; top: -12px; right: 15px; background: #9C27B0; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px;">3</div>
-        <h4 style="color: #7B1FA2; margin-bottom: 12px; margin-top: 8px;">🛍 موسم التخفيضات</h4>
-        <p style="margin: 6px 0;">• أداء جيد في Q4 (488.01%)</p>
-        <p style="margin: 6px 0;">• <strong>الفرصة:</strong> تحسين استراتيجية العروض والخصومات</p>
-    </div>
-    
-    <!-- Box 4 -->
-    <div style="background: linear-gradient(135deg, rgba(33, 150, 243, 0.1), rgba(100, 181, 246, 0.1)); padding: 20px; border-radius: 12px; border-left: 5px solid #2196F3; position: relative;">
-        <div style="position: absolute; top: -12px; right: 15px; background: #2196F3; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px;">4</div>
-        <h4 style="color: #1976D2; margin-bottom: 12px; margin-top: 8px;">🎒 العودة للمدارس</h4>
-        <p style="margin: 6px 0;">• حملات ناجحة في Q3</p>
-        <p style="margin: 6px 0;">• <strong>الفرصة:</strong> التوسع في الحملات التعليمية</p>
-    </div>
-</div>
-        </div>
-
-        <!-- 10. توزيع الميزانية -->
-        <div class="section" id="section-10">
-            <h2 class="section-title">💰 10. توزيع الميزانية المُسجّل فعلياً</h2>
-            
-            <div class="subsection">أ) الإنفاق الفعلي حسب القناة:</div>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>القناة</th>
-                        <th>الإنفاق (ريال)</th>
-                        <th>النسبة</th>
-                        <th>الإيرادات</th>
-                        <th>ROI%</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Instagram</strong></td>
-                        <td>3,008,123</td>
-                        <td>24.4%</td>
-                        <td>17,506,422</td>
-                        <td style="color: #4CAF50; font-weight: 900;">514.60%</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Snapchat</strong></td>
-                        <td>3,012,456</td>
-                        <td>24.5%</td>
-                        <td>17,129,837</td>
-                        <td style="color: #4CAF50; font-weight: 900;">470.02%</td>
-                    </tr>
-                    <tr>
-                        <td><strong>TikTok</strong></td>
-                        <td>3,647,891</td>
-                        <td style="color: #f44336; font-weight: 900;">29.6%</td>
-                        <td>19,536,712</td>
-                        <td style="color: #f44336;">426.34%</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Twitter</strong></td>
-                        <td>2,651,245</td>
-                        <td>21.5%</td>
-                        <td>15,502,000</td>
-                        <td>462.24%</td>
-                    </tr>
-                </tbody>
-            </table>
-            
-           <div class="box warning">
-    <p style="direction: rtl; text-align: right; line-height: 2.2; font-size: 1.05em; margin: 0;">
-        <strong style="color: #FF9800; font-size: 1.1em;">📌 الملاحظة:</strong><br><br>
-        يُظهر توزيع الميزانية المسجّل فعليًا اختلالًا في كفاءة التوزيع بين القنوات؛ حيث استحوذت 
-        <strong style="color: #f44336;">TikTok على 29.6%</strong> من إجمالي الإنفاق رغم تسجيلها أدنى عائد استثماري 
-        (<strong style="color: #f44336;">ROI 436%</strong>)، في حين حققت 
-        <strong style="color: #4CAF50;">Instagram و Snapchat</strong> عوائد أعلى بنسب إنفاق أقل.
-    </p>
-</div>
-            
-            <div class="subsection">ب) الإنفاق الفعلي حسب المدينة:</div>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>المدينة</th>
-                        <th>الإنفاق (ريال)</th>
-                        <th>النسبة</th>
-                        <th>الإيرادات</th>
-                        <th>ROI%</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Medina</strong></td>
-                        <td>2,889,038</td>
-                        <td>23.5%</td>
-                        <td>16,581,615</td>
-                        <td style="color: #4CAF50; font-weight: 900;">487.52%</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Jeddah</strong></td>
-                        <td>2,711,325</td>
-                        <td>22.0%</td>
-                        <td>15,405,993</td>
-                        <td style="color: #4CAF50; font-weight: 800;">470.42%</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Dammam</strong></td>
-                        <td>2,327,717</td>
-                        <td>18.9%</td>
-                        <td>11,834,316</td>
-                        <td style="color: #f44336;">408.41%</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Riyadh</strong></td>
-                        <td>2,306,405</td>
-                        <td style="color: #FF9800;">18.7%</td>
-                        <td>13,392,308</td>
-                        <td style="color: #4CAF50; font-weight: 800;">480.66%</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Makkah</strong></td>
-                        <td>2,165,238</td>
-                        <td>17.6%</td>
-                        <td>13,462,739</td>
-                        <td style="color: #4CAF50; font-weight: 700;">476.32%</td>
-                    </tr>
-                </tbody>
-            </table>
-            
-            <div class="box warning">
-    <p style="direction: rtl; text-align: right; line-height: 2.2; font-size: 1.05em; margin: 0;">
-        <strong style="color: #FF9800; font-size: 1.1em;">📌 الملاحظة:</strong><br><br>
-        تُظهر البيانات أن <strong style="color: #4CAF50;">الرياض</strong> رغم تحقيقها ثاني أعلى عائد على الاستثمار 
-        (<strong style="color: #4CAF50;">ROI 480.66%</strong>)، لم تحصل إلا على 
-        <strong style="color: #f44336;">18.7%</strong> من إجمالي الميزانية، مما يعكس تباينًا في توزيع الإنفاق بين المدن 
-        مقارنة بمستويات الأداء المختلفة.
-    </p>
-</div>
-            
-            <div class="subsection">ج) الإنفاق الفعلي حسب الربع:</div>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>الربع</th>
-                        <th>الإنفاق (ريال)</th>
-                        <th>النسبة</th>
-                        <th>الإيرادات</th>
-                        <th>ROI%</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Q1</strong></td>
-                        <td>3,195,745</td>
-                        <td>25.9%</td>
-                        <td>17,248,104</td>
-                        <td>439.72%</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Q2</strong></td>
-                        <td>3,188,373</td>
-                        <td style="color: #FF9800;">25.9%</td>
-                        <td>16,523,941</td>
-                        <td style="color: #f44336;">418.26%</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Q3</strong></td>
-                        <td>2,894,057</td>
-                        <td style="color: #4CAF50;">23.5%</td>
-                        <td>18,018,391</td>
-                        <td style="color: #4CAF50; font-weight: 900;">522.60%</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Q4</strong></td>
-                        <td>3,041,540</td>
-                        <td>24.7%</td>
-                        <td>17,884,534</td>
-                        <td style="color: #4CAF50; font-weight: 800;">488.01%</td>
-                    </tr>
-                </tbody>
-            </table>
-            
-            <div class="box warning">
-    <p style="direction: rtl; text-align: right; line-height: 2.2; font-size: 1.05em; margin: 0;">
-        <strong style="color: #FF9800; font-size: 1.1em;">📌 الملاحظة:</strong><br><br>
-        تُظهر البيانات أن <strong style="color: #4CAF50;">الربع الثالث (Q3)</strong> حقق أعلى عائد على الاستثمار 
-        (<strong style="color: #4CAF50;">ROI 522.60%</strong>) رغم تسجيله أقل نسبة إنفاق 
-        (<strong style="color: #f44336;">23.5%</strong>)، مما يعكس تفاوتًا واضحًا في العائد مقابل حجم الإنفاق بين الأرباع الزمنية.
-    </p>
-</div>
-            
-            <div class="chart-container">
-                <canvas id="budgetChart"></canvas>
-            </div>
-        </div>
-
-        <!-- 11. النتائج الرئيسية -->
-        <div class="section" id="section-11">
-            <h2 class="section-title">🎯 11. النتائج الرئيسية</h2>
-            
-            <div class="subsection" style="color: #4CAF50;">✨ النجاحات الأبرز:</div>
-            
-            <div class="grid-2">
-                <div class="box success">
-                    <div style="font-size: 3em; text-align: center; margin-bottom: 15px;">1️⃣</div>
-                    <h4 style="color: #4CAF50; font-size: 1.3em; margin-bottom: 15px; text-align: center;">عائد استثمار استثنائي</h4>
-                    <p style="text-align: center;">ROI إجمالي: <strong>466%</strong><br>
-                    كل ريال حقق <strong>5.65 ريال إيرادات</strong><br>
-                    كل ريال أُنفق حقق <strong>4.65 ريال ربح صافي</strong><br>
-                    ربح صافي: <strong>57.3 مليون ريال</strong></p>
-                </div>
-                
-                <div class="box success">
-                    <div style="font-size: 3em; text-align: center; margin-bottom: 15px;">2️⃣</div>
-                    <h4 style="color: #4CAF50; font-size: 1.3em; margin-bottom: 15px; text-align: center;">أداء قوي للمدن</h4>
-                    <p style="text-align: center;">المدينة تصدرت بـ <strong>487%</strong><br>
-                    جميع المدن حققت ROI أعلى من <strong>400%</strong></p>
-                </div>
-                
-                <div class="box success">
-                    <div style="font-size: 3em; text-align: center; margin-bottom: 15px;">3️⃣</div>
-                    <h4 style="color: #4CAF50; font-size: 1.3em; margin-bottom: 15px; text-align: center;">Instagram الأقوى</h4>
-                    <p style="text-align: center;">أعلى ROI: <strong>514.60%</strong><br>
-                    أقل CPA: <strong>28.82 ريال</strong><br>
-                    أداء متوازن وممتاز</p>
-                </div>
-                
-                <div class="box success">
-                    <div style="font-size: 3em; text-align: center; margin-bottom: 15px;">4️⃣</div>
-                    <h4 style="color: #4CAF50; font-size: 1.3em; margin-bottom: 15px; text-align: center;">Q3 الربع الذهبي</h4>
-                    <p style="text-align: center;">أعلى ROI: <strong>522.60%</strong><br>
-                    أعلى إيرادات: <strong>18 مليون</strong><br>
-                     أاثبت أعلى فعالية تشغيلية زمنية رغم أقل إنفاق!</p>
-                </div>
-                
-                <div class="box success">
-                    <div style="font-size: 3em; text-align: center; margin-bottom: 15px;">5️⃣</div>
-                    <h4 style="color: #4CAF50; font-size: 1.3em; margin-bottom: 15px; text-align: center;">الفئة 45+ الأقوى</h4>
-                    <p style="text-align: center;">أعلى ROI: <strong>517.54%</strong><br>
-                    أقل CPA: <strong>26.69 ريال</strong><br>
-                    قوة شرائية عالية</p>
-                </div>
-                
-                <div class="box success">
-                    <div style="font-size: 3em; text-align: center; margin-bottom: 15px;">6️⃣</div>
-                    <h4 style="color: #4CAF50; font-size: 1.3em; margin-bottom: 15px; text-align: center;">حملات استثنائية</h4>
-                    <p style="text-align: center;">حملة العيد: ROI <strong>51,274%</strong><br>
-                    5 حملات حققت ROI أعلى من <strong>15,000%</strong></p>
-                </div>
-            </div>
-            
-            <div class="subsection" style="color: #f44336; margin-top: 50px;">⚠ التحديات الملحوظة:</div>
-            
-            <div class="grid-2">
-                <div class="box danger">
-                    <div style="font-size: 3em; text-align: center; margin-bottom: 15px;">1️⃣</div>
-                    <h4 style="color: #f44336; font-size: 1.3em; margin-bottom: 15px; text-align: center;">TikTok - الأضعف</h4>
-                    <p style="text-align: center;">ROI أقل : <strong>436.34%</strong><br>
-                    رغم أكبر عدد حملات (<strong>148</strong>)<br>
-                    أعلى انفاق ، حصل على <strong>29.6%</strong> من الميزانية</p>
-                </div>
-                
-                <div class="box danger">
-                    <div style="font-size: 3em; text-align: center; margin-bottom: 15px;">2️⃣</div>
-                    <h4 style="color: #f44336; font-size: 1.3em; margin-bottom: 15px; text-align: center;">الدمام - يحتاج تحسين</h4>
-                    <p style="text-align: center;">ROI أقل : <strong>408.41%</strong><br>
-                    أعلى تكلفة ، CPA: <strong>33.43 ريال</strong><br>
-                    أقل عدد حملات: <strong>86</strong></p>
-                </div>
-                
-                <div class="box warning">
-                    <div style="font-size: 3em; text-align: center; margin-bottom: 15px;">3️⃣</div>
-                    <h4 style="color: #FF9800; font-size: 1.3em; margin-bottom: 15px; text-align: center;">Q2 - الأضعف</h4>
-                    <p style="text-align: center;">ROI أقل : <strong>418.26%</strong><br>
-                من أعلى الارباع إنفاقاً<br>
-                    يحتاج دراسة أسباب الضعف</p>
-                </div>
-                
-                <div class="box warning">
-                    <div style="font-size: 3em; text-align: center; margin-bottom: 15px;">4️⃣</div>
-
-
-<h4 style="color: #FF9800; font-size: 1.3em; margin-bottom: 15px; text-align: center;">عدم توازن الميزانية</h4>
-                    <p style="text-align: center;">Instagram (أفضل أداء) حصل على <strong>24.4%</strong> فقط<br>
-                    TikTok (أضعف أداء) حصل على <strong>29.6%</strong></p>
-                </div>
-                
-                <div class="box warning">
-                    <div style="font-size: 3em; text-align: center; margin-bottom: 15px;">5️⃣</div>
-                    <h4 style="color: #FF9800; font-size: 1.3em; margin-bottom: 15px; text-align: center;">الفئة 18-24</h4>
-                    <p style="text-align: center;">أعلى CPA: <strong>38.03 ريال</strong><br>
-                    أقل ROI بين الفئات العمرية</p>
-                </div>
-                
-                <div class="box danger">
-                    <div style="font-size: 3em; text-align: center; margin-bottom: 15px;">6️⃣</div>
-                    <h4 style="color: #f44336; font-size: 1.3em; margin-bottom: 15px; text-align: center;">حملات خاسرة</h4>
-                    <p style="text-align: center;">5 حملات حققت خسائر كبيرة<br>
-                    ROI سالب يصل إلى <strong>-95%</strong><br>
-                    إجمالي خسائر تتجاوز <strong>150,000 ريال</strong></p>
-                </div>
-            </div>
-            
-            <div class="subsection" style="color: #4CAF50; margin-top: 50px;">💡 الفرص الواضحة:</div>
-            
-            <div class="grid-2">
-                <div class="box success">
-                    <h4 style="color: #4CAF50; margin-bottom: 15px;">1️⃣ زيادة الاستثمار في Instagram</h4>
-                    <p>أعلى ROI (514.60%) - يستحق حصة أكبر من الميزانية</p>
-                </div>
-                
-                <div class="box success">
-                    <h4 style="color: #4CAF50; margin-bottom: 15px;">2️⃣ التوسع في المدينة والرياض</h4>
-                    <p>أداء استثنائي (487% و 480%) - إمكانية نمو عالية</p>
-                </div>
-                
-                <div class="box success">
-                    <h4 style="color: #4CAF50; margin-bottom: 15px;">3️⃣ استهداف الفئة 45+</h4>
-                    <p>أعلى ROI وأقل CPA - سوق غير مستغل بالكامل</p>
-                </div>
-                
-                <div class="box success">
-                    <h4 style="color: #4CAF50; margin-bottom: 15px;">4️⃣ التركيز على المواسم</h4>
-                    <p>الحملات الدينية (رمضان/عيد) والوطنية (اليوم الوطني) والتخفيضات الموسمية</p>
-                </div>
-                
-                <div class="box success">
-                    <h4 style="color: #4CAF50; margin-bottom: 15px;">5️⃣ تحسين استراتيجية TikTok</h4>
-                    <p>148 حملة لكن أداء ضعيف - إعادة تقييم المحتوى والاستهداف</p>
-                </div>
-                
-                <div class="box success">
-                    <h4 style="color: #4CAF50; margin-bottom: 15px;">6️⃣ الاستفادة من نجاحات Q3</h4>
-                    <p>دراسة العوامل المشتركة وتطبيق الدروس المستفادة</p>
-                </div>
-            </div>
-            
-            <div style="margin-top: 60px; padding: 50px; background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%); border-radius: 25px; text-align: center; border: 3px solid #667eea;">
-                <div style="font-size: 2.5em; font-weight: 900; margin-bottom: 30px; color: #667eea;">
-                    🎯 التركيبة الأفضل الملاحظة
-                </div>
-                <div style="font-size: 1.8em; line-height: 2.5; padding: 40px; background: rgba(255,255,255,0.7); border-radius: 20px; font-weight: 700;">
-                    <strong style="color: #667eea;">Snapchat/Instagram</strong> + 
-                    <strong style="color: #764ba2;">المدينة/الرياض/جدة</strong> + 
-                    <strong style="color: #667eea;">الفئة 45+ أو 25-34</strong> + 
-                    <strong style="color: #764ba2;">المواسم الدينية/الوطنية</strong>
-                    <br><br>
-                    <span style="font-size: 1.8em; color: #666;">= ROI يتجاوز 20,000%</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="footer">
-            <p style="font-size: 1.5em; color: #667eea; font-weight: 800; margin-bottom: 20px;">
-                📊 تقرير تحليل الحملات التسويقية
-            </p>
-            <p style="font-size: 1.2em; font-weight: 600;">
-                <strong>إعداد:</strong> زينب الحربي - محللة بيانات
-            </p>
-            <p style="font-size: 1.1em; margin-top: 10px;">
-                <strong>التاريخ:</strong> 3 نوفمبر 2025
-            </p>
-            <p style="font-size: 1.1em; margin-top: 10px;">
-                <strong>نطاق التحليل:</strong> 500 حملة تسويقية عبر 4 أرباع (Q1-Q4)
-            </p>
-            <div style="margin-top: 30px; padding-top: 30px; border-top: 3px solid #eee;">
-                <p style="font-size: 1.1em; line-height: 2; color: #666;">
-                    هذا التقرير يعرض البيانات والنتائج الفعلية دون تقديم توصيات.<br>
-                </p>
-            </div>
-        </div>
-
-    </div>
-
-    <script>
-        // Progress Bar
-        window.addEventListener('scroll', function() {
-            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            const scrolled = (winScroll / height) * 100;
-            document.getElementById('progressBar').style.width = scrolled + '%';
-        });
-        
-        // Dark Mode Toggle
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            localStorage.setItem('darkMode', isDark);
-            
-            const btn = document.getElementById('darkModeBtn');
-            btn.textContent = isDark ? '☀ الوضع النهاري' : '🌙 الوضع الليلي';
-        }
-        
-        // Load Dark Mode Preference
-        window.addEventListener('load', function() {
-            if (localStorage.getItem('darkMode') === 'true') {
-                document.body.classList.add('dark-mode');
-                document.getElementById('darkModeBtn').textContent = '☀ الوضع النهاري';
-            }
-        });
-        
-        // Navigation Toggle
-        function toggleNav() {
-            const menu = document.getElementById('navMenu');
-            menu.classList.toggle('open');
-        }
-        
-        // Search Functionality
-        document.getElementById('searchBox').addEventListener('input', function(e) {
-            const term = e.target.value.toLowerCase();
-            document.querySelectorAll('.section').forEach(s => {
-                const text = s.textContent.toLowerCase();
-                if (term === '' || text.includes(term)) {
-                    s.style.display = 'block';
-                    s.style.border = term !== '' ? '3px solid #FFD700' : 'none';
-                } else {
-                    s.style.display = 'none';
-                }
-            });
-        });
-        
-        // Smooth Scroll
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    // Close menu after click
-                    document.getElementById('navMenu').classList.remove('open');
-                }
-            });
-        });
-        
-        // Section Animations
-        const observer = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, { threshold: 0.1 });
-        
-        document.querySelectorAll('.section').forEach(section => {
-            observer.observe(section);
-        });
-        
-        // Charts Configuration
-        const chartOptions = {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: {
-                    labels: { 
-                        font: { family: 'Tajawal', size: 14, weight: '600' },
-                        padding: 15
-                    }
-                }
-            }
-        };
-        
-        // Chart 1: Cities ROI
-        new Chart(document.getElementById('cityChart'), {
-            type: 'bar',
-            data: {
-                labels: ['المدينة', 'الرياض', 'مكة', 'جدة', 'الدمام'],
-                datasets: [{
-                    label: 'متوسط ROI %',
-                    data: [487.52, 480.66, 476.32, 470.42, 408.41],
-                    backgroundColor: ['#667eea', '#f093fb', '#4facfe', '#43e97b', '#fa709a'],
-                    borderRadius: 12,
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                ...chartOptions,
-                plugins: {
-                    ...chartOptions.plugins,
-                    legend: { display: false },
-                    title: {
-                        display: true,
-                        text: 'مقارنة ROI حسب المدينة',
-                        font: { size: 20, family: 'Tajawal', weight: 'bold' },
-                        padding: { top: 10, bottom: 30 }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return context.parsed.y.toFixed(2) + '%';
-                            }
-                        },
-                        titleFont: { family: 'Tajawal', size: 14 },
-                        bodyFont: { family: 'Tajawal', size: 13 }
-                    }
-                },
-                scales: {
-                    y: { 
-                        beginAtZero: true,
-                        ticks: { 
-                            callback: value => value + '%',
-                            font: { family: 'Tajawal', size: 12 }
-                        },
-                        grid: { color: 'rgba(0, 0, 0, 0.05)' }
-                    },
-                    x: { 
-                        ticks: { font: { family: 'Tajawal', size: 13, weight: '600' } },
-                        grid: { display: false }
-                    }
-                }
-            }
-        });
-        
-        // Chart 2: Channels Doughnut
-        new Chart(document.getElementById('channelChart'), {
-            type: 'doughnut',
-            data: {
-                labels: ['Instagram (514.60%)', 'Snapchat (470.02%)', 'Twitter (462.24%)', 'TikTok (436.34%)'],
-                datasets: [{
-                    data: [514.60, 470.02, 462.24, 436.34],
-                    backgroundColor: ['#E1306C', '#FFFC00', '#1DA1F2', '#000000'],
-                    borderWidth: 4,
-                    borderColor: '#fff',
-                    hoverOffset: 15
-                }]
-            },
-            options: {
-                ...chartOptions,
-                plugins: {
-                    ...chartOptions.plugins,
-                    legend: { 
-                        position: 'bottom',
-                        labels: {
-                            font: { family: 'Tajawal', size: 13 },
-                            padding: 20,
-                            usePointStyle: true,
-                            pointStyle: 'circle'
-                        }
-                    },
-                    title: {
-                        display: true,
-                        text: 'توزيع ROI حسب القناة',
-                        font: { size: 20, family: 'Tajawal', weight: 'bold' },
-                        padding: { top: 10, bottom: 20 }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return context.label + ' ROI';
-                            }
-                        },
-                        titleFont: { family: 'Tajawal', size: 14 },
-                        bodyFont: { family: 'Tajawal', size: 13 }
-                    }
-                }
-            }
-        });
-        
-        // Chart 3: Quarterly Performance Line
-        new Chart(document.getElementById('quarterChart'), {
-            type: 'line',
-            data: {
-                labels: ['Q1 (يناير-مارس)', 'Q2 (أبريل-يونيو)', 'Q3 (يوليو-سبتمبر)', 'Q4 (أكتوبر-ديسمبر)'],
-                datasets: [{
-                    label: 'ROI %',
-                    data: [439.72, 418.26, 522.60, 488.01],
-                    borderColor: '#667eea',
-                    backgroundColor: 'rgba(102, 126, 234, 0.15)',
-                    fill: true,
-                    tension: 0.4,
-                    borderWidth: 3,
-                    pointRadius: 6,
-                    pointHoverRadius: 10,
-                    pointBackgroundColor: '#667eea',
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 3
-                }]
-            },
-            options: {
-                ...chartOptions,
-                plugins: {
-                    ...chartOptions.plugins,
-                    legend: { display: false },
-                    title: {
-                        display: true,
-                        text: 'اتجاه ROI عبر الأرباع',
-                        font: { size: 20, family: 'Tajawal', weight: 'bold' },
-                        padding: { top: 10, bottom: 30 }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return 'ROI: ' + context.parsed.y.toFixed(2) + '%';
-                            }
-                        },
-                        titleFont: { family: 'Tajawal', size: 14 },
-                        bodyFont: { family: 'Tajawal', size: 13 }
-                    }
-                },
-                scales: {
-                    y: { 
-                        beginAtZero: true,
-                        ticks: { 
-                            callback: value => value + '%',
-                            font: { family: 'Tajawal', size: 12 }
-                        }
-                    },
-                    x: { 
-                        ticks: { font: { family: 'Tajawal', size: 12 } }
-                    }
-                }
-            }
-        });
-        
-        // Chart 4: Budget Distribution
-        new Chart(document.getElementById('budgetChart'), {
-            type: 'bar',
-            data: {
-                labels: ['Instagram', 'Snapchat', 'TikTok', 'Twitter'],
-                datasets: [{
-                    label: 'الإنفاق (مليون ريال)',
-                    data: [3.01, 3.01, 3.65, 2.65],
-                    backgroundColor: '#667eea',
-                    borderRadius: 10
-                }, {
-                    label: 'ROI %',
-                    data: [514.60, 470.02, 436.34, 462.24],
-                    backgroundColor: '#4CAF50',
-                    borderRadius: 10,
-                    yAxisID: 'y1'
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        labels: { font: { family: 'Tajawal', size: 13 } }
-                    },
-                    title: {
-                        display: true,
-                        text: 'توزيع الميزانية vs ROI',
-                        font: { size: 20, family: 'Tajawal', weight: 'bold' }
-                    }
-                },
-                scales: {
-                    y: {
-                        type: 'linear',
-                        display: true,
-                        position: 'right',
-                        title: { 
-                            display: true, 
-                            text: 'الإنفاق (مليون ريال)',
-                            font: { family: 'Tajawal' }
-                        },
-                        ticks: { font: { family: 'Tajawal' } }
-                    },
-                    y1: {
-                        type: 'linear',
-                        display: true,
-                        position: 'left',
-                        title: { 
-                            display: true, 
-                            text: 'ROI %',
-                            font: { family: 'Tajawal' }
-                        },
-                        ticks: { font: { family: 'Tajawal' } }
-                    },
-                    x: {
-                        ticks: { font: { family: 'Tajawal', size: 13 } }
-                    }
-                }
-            }
-        });
-        
-        console.log('✅ Dashboard loaded successfully!');
-    </script>
-
-</body>
-</html>
