@@ -16,7 +16,7 @@ This project delivers an end-to-end analysis of a large-scale e-commerce marketi
 ## 📊 Power BI Dashboard Snapshot
 The following dashboard provides a high-level summary of the campaign's performance, including channel breakdown and geographical analysis.
 
-<img src="https:Marketing_Dashboard.jpeg" alt="Marketing Performance Dashboard showing ROI, Profit, and Channel Breakdown." width="700"/>
+<img src="Marketing_Dashboard.jpeg" alt="Marketing Performance Dashboard showing ROI, Profit, and Channel Breakdown." width="700"/>
 
 ---
 
