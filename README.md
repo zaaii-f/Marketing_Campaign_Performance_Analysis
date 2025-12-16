@@ -35,6 +35,6 @@ The full analysis is documented step-by-step in the accompanying Jupyter Noteboo
 
 ## 🔗 View Final Report & Files
 * **[View Full Python Code Notebook Here] (https://github.com/zaaii-f/Marketing_Campaign_Performance_Analysis/blob/main/Marketing_Campaign_Performance_Analysis_2025-11.ipynb)** *
-* **[View Interactive HTML Report] ( https://zaaii-f.github.io/Marketing_Campaign_Performance_Analysis/)**
+* **[View Interactive HTML Report] ( https://zaaii-f.github.io/Marketing_Campaign_Performance_Analysis/Marketing_Report.html)**
 
 * **Data Analyst📉:** Zainab .. https://www.linkedin.com/in/zainab-alharbi-38aba733a?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app
