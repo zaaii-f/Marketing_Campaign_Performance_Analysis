@@ -4,7 +4,8 @@
 This project delivers an end-to-end analysis of a large-scale e-commerce marketing campaign (500 campaigns over 4 quarters). The analysis, conducted using Python and visualized in Power BI, focuses on optimizing budget allocation and measuring efficiency.
 
 ### Key Results
-* **Overall ROI:** **465.56%** * **Total Profit:** **57.36 Million SAR**.
+* **Overall ROI:** **465.56%**
+* **Total Profit:** **57.36 Million SAR**.
 * **Total Conversions:** 405K.
 
 ## 🛠️ Tools and Technologies
